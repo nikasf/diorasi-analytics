@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
 	id 'java'
+	id "org.flywaydb.flyway" version "9.1.2"
 }
 
 group = 'gr.snika'
@@ -16,11 +17,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.h2database:h2'
+	// https://mavenlibs.com/maven/dependency/org.postgresql/postgresql
+	implementation 'org.postgresql:postgresql:42.2.26.jre6'
+	//implementation 'org.flywaydb.flyway:9.1.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/diorasi'
+    user = 'postgres'
+    password='postgres'
 }
