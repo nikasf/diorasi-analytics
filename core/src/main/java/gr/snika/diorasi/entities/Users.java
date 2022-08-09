@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import gr.snika.diorasi.domain.AppUserDetails;
+
 @Entity
 public class Users {
 	
@@ -86,4 +88,7 @@ public class Users {
 	}
 	
 	
+	public AppUserDetails asUserDetails() {
+		return new AppUserDetails(this);
+	}
 }
