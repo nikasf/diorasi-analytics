@@ -8,21 +8,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gr.snika.diorasi.entities.Users;
+import gr.snika.diorasi.entities.AppUser;
 
 public class AppUserDetails implements UserDetails {
 	
 	private static final long serialVersionUID = 8597925794504973138L;
 	
-	Users user;
+	AppUser user;
 	
-	public AppUserDetails(Users user) {
+	public AppUserDetails(AppUser user) {
 		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		SimpleGrantedAuthority sga = new SimpleGrantedAuthority(user.getRole());
+//		SimpleGrantedAuthority sga = new SimpleGrantedAuthority("ADMIN");
 		List<SimpleGrantedAuthority> sgaList = new ArrayList<>();
 		sgaList.add(sga);
 		return sgaList;

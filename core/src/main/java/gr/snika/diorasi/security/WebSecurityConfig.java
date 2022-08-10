@@ -6,11 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-import gr.snika.diorasi.repositories.UsersRepository;
+import gr.snika.diorasi.entities.AppUser;
+import gr.snika.diorasi.repositories.UserRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -20,14 +23,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 			.authorizeRequests()
-			.antMatchers("/**").permitAll()
-			.antMatchers("${apiPrefix}/**").authenticated()
+			.antMatchers("/api/**").authenticated()
+//			.antMatchers("/api/**").hasRole("USER")
+			.antMatchers("/home").permitAll()
 			.and()
-			.csrf().disable();
+			.csrf().disable()
+			.httpBasic();
 	}
 
 	@Autowired
-	private UsersRepository userRepository;
+	private UserRepository userRepository;
 	
 	@Bean
 	@Override
@@ -36,9 +41,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-				// TODO Auto-generated method stub
-				return userRepository.findByUsername(username).asUserDetails();
+				AppUser user= userRepository.findByUsername(username);
+				if (user == null)
+			        throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+			    return user.asUserDetails();
 			}
 		};
 	}
+	
+	
+//	@Bean
+//    UserDetailsService testUserDetailsService() {
+//        UserDetails user = User.withDefaultPasswordEncoder()
+//                .username("user")
+//                .password("user")
+//                .roles("USER")
+//                .build();
+//        return new InMemoryUserDetailsManager(user);
+//    }
 }

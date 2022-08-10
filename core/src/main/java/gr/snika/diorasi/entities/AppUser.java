@@ -2,6 +2,7 @@ package gr.snika.diorasi.entities;
 
 import java.util.UUID;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,7 +11,7 @@ import javax.persistence.Id;
 import gr.snika.diorasi.domain.AppUserDetails;
 
 @Entity
-public class Users {
+public class AppUser {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -22,13 +23,14 @@ public class Users {
 	
 	private String email;
 	
+	@Column(columnDefinition = "boolean default true")
 	private boolean enabled;
 	
 	private String role;
 	
-	protected Users() {}
+	protected AppUser() {}
 	
-	public Users(String username, String password, String email, boolean enabled, String role) {
+	public AppUser(String username, String password, String email, boolean enabled, String role) {
 		super();
 		this.username = username;
 		this.password = password;
