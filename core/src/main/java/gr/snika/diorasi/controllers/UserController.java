@@ -14,15 +14,12 @@ import gr.snika.diorasi.repositories.UserRepository;
 @RequestMapping(path = "${apiPrefix}/users")
 public class UserController {
 	
-//	@Autowired
-//	UserRepository userRepository;
-	
+	@Autowired
+	UserRepository userRepository;
 	
 	@PostMapping
-	String newUser(@RequestBody AppUser newUser) {
-		System.out.println("test");
-		return "test";
-//	  return userRepository.save(newUser);		
+	AppUser newUser(@RequestBody AppUser newUser) {
+		return userRepository.save(newUser);		
 	}
 	
 	@GetMapping

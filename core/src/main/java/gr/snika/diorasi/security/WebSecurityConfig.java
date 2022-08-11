@@ -22,13 +22,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+			.csrf().disable()
 			.authorizeRequests()
 			.antMatchers("/api/**").authenticated()
-//			.antMatchers("/api/**").hasRole("USER")
-			.antMatchers("/home").permitAll()
-			.and()
-			.csrf().disable()
-			.httpBasic();
+			.antMatchers("/home").permitAll();
 	}
 
 	@Autowired
@@ -49,14 +46,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		};
 	}
 	
-	
-//	@Bean
-//    UserDetailsService testUserDetailsService() {
-//        UserDetails user = User.withDefaultPasswordEncoder()
-//                .username("user")
-//                .password("user")
-//                .roles("USER")
-//                .build();
-//        return new InMemoryUserDetailsManager(user);
-//    }
 }
