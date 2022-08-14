@@ -6,11 +6,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import gr.snika.diorasi.entities.AppUser;
 import gr.snika.diorasi.repositories.UserRepository;
@@ -41,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				AppUser user= userRepository.findByUsername(username);
 				if (user == null)
 			        throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-			    return user.asUserDetails();
+			    return (UserDetails) user.asUserDetails();
 			}
 		};
 	}

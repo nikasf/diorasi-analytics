@@ -8,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import gr.snika.diorasi.domain.AppUserDetails;
-
 @Entity
 public class AppUser {
 	
@@ -28,7 +26,7 @@ public class AppUser {
 	
 	private String role;
 	
-	protected AppUser() {}
+	public AppUser() {}
 	
 	public AppUser(String username, String password, String email, boolean enabled, String role) {
 		super();
@@ -91,6 +89,6 @@ public class AppUser {
 	
 	
 	public AppUserDetails asUserDetails() {
-		return new AppUserDetails(this);
+		return new AppUserDetails(username, password, email, enabled, role);
 	}
 }
