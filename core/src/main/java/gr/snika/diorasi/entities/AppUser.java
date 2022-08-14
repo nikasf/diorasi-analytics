@@ -1,14 +1,20 @@
 package gr.snika.diorasi.entities;
 
+import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="app_user")
 public class AppUser {
 	
 	@Id
@@ -25,6 +31,9 @@ public class AppUser {
 	private boolean enabled;
 	
 	private String role;
+	
+	@OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Set<Website> websites;
 	
 	public AppUser() {}
 	
