@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import gr.snika.diorasi.Role;
+
 public class AppUserDetails implements UserDetails {
 	
 	private static final long serialVersionUID = 8597925794504973138L;
@@ -39,6 +41,10 @@ public class AppUserDetails implements UserDetails {
 		List<SimpleGrantedAuthority> sgaList = new ArrayList<>();
 		sgaList.add(sga);
 		return sgaList;
+	}
+	
+	public boolean isAdmin() {
+		return getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.name()));
 	}
 
 	@Override

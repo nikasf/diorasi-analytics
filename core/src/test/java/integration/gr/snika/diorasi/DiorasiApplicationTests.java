@@ -1,13 +1,12 @@
 package integration.gr.snika.diorasi;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 //import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.UUID;
+import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,7 @@ public class DiorasiApplicationTests {
     @Test
     public void creatingaNewWebsite_shouldSucceedWith200() throws Exception {
 		mockMvc.perform(post("/api/websites")
-						.content(asJsonString(new WebsiteDTO("www.glekkas.gr", "Test for glekkas", UUID.fromString("0f3a9e39-40af-42da-803d-d6fd7a1eeb4f"))))
+						.content(asJsonString(new WebsiteDTO("www.glekkas.gr", "Test for glekkas", new Date())))
 						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 						)
 				.andDo(print())

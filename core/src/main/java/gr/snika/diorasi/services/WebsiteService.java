@@ -1,6 +1,7 @@
 package gr.snika.diorasi.services;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,22 +21,41 @@ public class WebsiteService {
 	@Autowired
 	UserRepository userRepository;
 		
-	public void saveWebsite(WebsiteDTO websiteDto) {
+	public void saveWebsite(WebsiteDTO websiteDto, String username) {
 		Website website = convertToWebsite(websiteDto);
+		AppUser user = getUser(username);
+		website.setOwner(user);
 		websiteRepository.save(website);
 	}
 	
-	public Website convertToWebsite(WebsiteDTO dto) {
+	private AppUser getUser(String username) {
+		return userRepository.findByUsername(username);
+	}
+
+	public List<WebsiteDTO> getAllWebsites(String username){
+		List<WebsiteDTO> dtos = new ArrayList<>();
+		AppUser user = getUser(username);
+		Iterable<Website> websites = websiteRepository.findAllByOwnerId(user);
+		websites.forEach(website -> dtos.add(convertToWebsiteDTO(website)));
 		
+		return dtos;
+	}
+	
+	
+	public Website convertToWebsite(WebsiteDTO dto) {
 		Website website = new Website();
 		website.setDomain(dto.getDomain());
 		website.setName(dto.getName());
-		Optional<AppUser> optional = userRepository.findById(dto.getOwner_id());
-		optional.ifPresent(user -> website.setOwner(user));
-		//FIXME Create a custom exception
-		optional.orElseThrow(() -> new RuntimeException("The website must have a valid owner."));
-		
+		website.setCreatedAt(dto.getCreatedAt());
 		return website;
+	}
+	
+	public WebsiteDTO convertToWebsiteDTO(Website website) {
+		WebsiteDTO websiteDTO = new WebsiteDTO();
+		websiteDTO.setDomain(website.getDomain());
+		websiteDTO.setName(website.getName());
+		websiteDTO.setCreatedAt(website.getCreatedAt());
+		return websiteDTO;
 	}
 
 }

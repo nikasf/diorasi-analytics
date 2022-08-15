@@ -1,6 +1,6 @@
 package gr.snika.diorasi.dto;
 
-import java.util.UUID;
+import java.util.Date;
 
 public class WebsiteDTO {
 
@@ -8,15 +8,15 @@ public class WebsiteDTO {
 	
 	private String name;
 	
-	private UUID owner_id;
+	private Date createdAt;
 	
 	public WebsiteDTO() {}
 
-	public WebsiteDTO(String domain, String name, UUID owner_id) {
+	public WebsiteDTO(String domain, String name, Date createdAt) {
 		super();
 		this.domain = domain;
 		this.name = name;
-		this.owner_id = owner_id;
+		this.createdAt = createdAt;
 	}
 
 	public String getDomain() {
@@ -27,20 +27,20 @@ public class WebsiteDTO {
 		return name;
 	}
 
-	public UUID getOwner_id() {
-		return owner_id;
-	}
-
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
 
 	public void setName(String name) {
 		this.name = name;
+	}	
+
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setOwner_id(UUID owner_id) {
-		this.owner_id = owner_id;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 	
 }
