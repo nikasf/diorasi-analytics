@@ -30,12 +30,10 @@ public class WebsiteService {
 		Website website = new Website();
 		website.setDomain(dto.getDomain());
 		website.setName(dto.getName());
-		Optional<AppUser> user = userRepository.findById(dto.getOwner_id());
-		if (user.isPresent()) { 
-			website.setOwner(user.get()); 
-		} else {
-			throw new RuntimeException("The website must have a valid owner.");
-		}
+		Optional<AppUser> optional = userRepository.findById(dto.getOwner_id());
+		optional.ifPresent(user -> website.setOwner(user));
+		//FIXME Create a custom exception
+		optional.orElseThrow(() -> new RuntimeException("The website must have a valid owner."));
 		
 		return website;
 	}
