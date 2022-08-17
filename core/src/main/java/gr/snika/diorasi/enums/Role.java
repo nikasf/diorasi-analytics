@@ -1,4 +1,4 @@
-package gr.snika.diorasi;
+package gr.snika.diorasi.enums;
 
 public enum Role {
 	

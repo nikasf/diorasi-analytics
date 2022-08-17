@@ -24,23 +24,19 @@ CREATE TABLE website (
 	  ON DELETE CASCADE
 );
 
-CREATE TABLE pageview (
-    id 				UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    website_id 		UUID NOT NULL,
-    session_id 		INTEGER NOT NULL,
-    created_at 		TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    url 			VARCHAR(500) NOT NULL,
-    referrer 		VARCHAR(500)
-);
-
 CREATE TABLE event (
 	id 				UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     website_id		UUID NOT NULL,
-    session_id 		INTEGER NOT NULL,
+    session_id 		VARCHAR(200) NOT NULL,
     created_at 		TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     url 			VARCHAR(500) NOT NULL,
     event_type 		VARCHAR(50) NOT NULL,
-    event_value 	VARCHAR(50) NOT NULL
+    event_value 	VARCHAR(50),
+    referrer 		VARCHAR(500),
+    CONSTRAINT fk_website
+      FOREIGN KEY(website_id) 
+	  REFERENCES website(id)
+	  ON DELETE CASCADE
 );
 
 INSERT INTO public.app_user(username, "password", email, enabled, created_at, last_login, "role", name)

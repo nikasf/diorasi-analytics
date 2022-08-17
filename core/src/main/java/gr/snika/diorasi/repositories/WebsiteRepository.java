@@ -15,4 +15,7 @@ public interface WebsiteRepository extends CrudRepository<Website, UUID> {
 
 	@Query("SELECT w FROM Website w WHERE w.owner=:owner")
 	Iterable<Website> findAllByOwnerId(@Param("owner") AppUser owner);
+
+	@Query("SELECT w FROM Website w WHERE w.domain=:domain")
+	Website findByDomainName(@Param("domain") String domain);
 }
