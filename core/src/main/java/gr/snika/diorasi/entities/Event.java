@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -25,6 +27,7 @@ public class Event {
 	@Column(name = "session_id")
 	private String sessionId;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "created_at")
 	@CreationTimestamp
 	private Date createdAt;

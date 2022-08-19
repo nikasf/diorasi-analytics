@@ -1,4 +1,4 @@
-package integration.gr.snika.diorasi;
+package gr.snika.diorasi;
 
 //import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -56,17 +56,17 @@ public class DiorasiApplicationTests {
 			;
 	}
 	
-	@WithMockUser(value = "user")
-    @Test
-    public void creatingaNewWebsite_shouldSucceedWith200() throws Exception {
-		mockMvc.perform(post("/api/websites")
-						.content(asJsonString(new WebsiteDTO("www.glekkas.gr", "Test for glekkas", new Date())))
-						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-						)
-				.andDo(print())
-				.andExpect(status().isOk())
-			;
-	}
+//	@WithMockUser(value = "user")
+//    @Test
+//    public void creatingaNewWebsite_shouldSucceedWith200() throws Exception {
+//		mockMvc.perform(post("/api/websites")
+//						.content(asJsonString(new WebsiteDTO("www.glekkas.gr", "Test for glekkas", new Date())))
+//						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+//						)
+//				.andDo(print())
+//				.andExpect(status().isOk())
+//			;
+//	}
 	
 	
 	

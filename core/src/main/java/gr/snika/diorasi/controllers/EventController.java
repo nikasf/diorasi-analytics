@@ -1,6 +1,7 @@
 package gr.snika.diorasi.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,10 @@ public class EventController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<EventDTO>> getAllEvents(@RequestParam String domain, @AuthenticationPrincipal AppUserDetails user) {
+	public ResponseEntity<List<EventDTO>> getEvents(@RequestParam String domain, @RequestParam Optional<String> dateFrom, @RequestParam Optional<String> dateTo, @AuthenticationPrincipal AppUserDetails user) {
 		try {
 			if (user.isAdmin()) {
-				List<EventDTO> websites = eventService.getAllEvents(domain);
+				List<EventDTO> websites = eventService.getAllEvents(domain, dateFrom.orElse(null), dateTo.orElse(null));
 				return new ResponseEntity<List<EventDTO>>(websites,HttpStatus.OK);	
 			} else {
 				String message = "The current user does not have the ADMIN role in order to create a event entry.";
@@ -61,6 +62,5 @@ public class EventController {
 			return new ResponseEntity<List<EventDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	
+
 }
