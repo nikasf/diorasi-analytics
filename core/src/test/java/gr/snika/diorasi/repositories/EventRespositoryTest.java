@@ -3,8 +3,11 @@ package gr.snika.diorasi.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.jupiter.api.BeforeAll;
 //import org.assertj.core.api.Assertions;
 //import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,26 +18,20 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import gr.snika.diorasi.entities.AppUser;
+import gr.snika.diorasi.TestUtility;
 import gr.snika.diorasi.entities.Event;
-import gr.snika.diorasi.entities.Website;
-import gr.snika.diorasi.enums.Role;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@ActiveProfiles("test")
 //In order to use the actual database use the annotation below with the following value
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase
 public class EventRespositoryTest {
 	
-	@Autowired private UserRepository userRepository;
-	@Autowired private WebsiteRepository websiteRepository;
 	@Autowired private EventRepository eventRepository;
 	
-	AppUser appUser;
-	
-	Website website;
+	static TestUtility testUtility;
 	  
 	@Test
 	void injectedComponentsAreNotNull(){
@@ -43,22 +40,30 @@ public class EventRespositoryTest {
 	
 	@Test
 	void pageviewEventSavedSuccessfully() {
-		createInitialData();
 		Iterable<Event> events = eventRepository.findAll();
-	    assertThat(events).extracting(Event::getEventType).containsOnly("pageview");
+	    assertThat(events).extracting(Event::getEventType).contains("pageview", "quotationBrand", "quotationSubmit");
 	}
 
-	private void createInitialData() {
-		appUser = new AppUser("testUser", "testUser", "testUser@diorasi.gr", true, Role.ADMIN.name());
-		userRepository.save(appUser);
-		
-		website = new Website("www.agathi.gr", "Agathis website", new Date(), appUser);
-		websiteRepository.save(website);
-		
-		Event event = new Event("sessionId", new Date(), "www.agathi.gr/homepage", "pageview", null, null);
-		event.setWebsite(website);
-		
-		eventRepository.save(event);
-		
+	@Test
+	void getAllEventsOfAWebsiteForThelastMonth() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
+		Date from = null, to = null;
+		try {
+			from = sdf.parse("2022-07-23 00:07:47.992 +0300");
+			to = sdf.parse("2022-08-23 00:07:47.992 +0300");
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+	
+		Iterable<Event> events = eventRepository.findAllByWebsiteAndDateRange(testUtility.getWebsite(), from , to);
+		assertThat(events).hasSize(2);
 	}
+	
+	@BeforeAll
+    public static void db_setup(@Autowired UserRepository userRepository, @Autowired WebsiteRepository websiteRepository, @Autowired EventRepository eventRepository) {
+        System.out.println("startup - creating DB data");
+        testUtility = new TestUtility(userRepository, websiteRepository, eventRepository);
+		testUtility.createEventsForRangeSelection();
+		System.out.println("Finished - creating DB data");
+    }
 }

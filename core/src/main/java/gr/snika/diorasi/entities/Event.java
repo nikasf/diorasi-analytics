@@ -14,8 +14,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 @Entity
 @Table(name="event")
 public class Event {
@@ -27,9 +25,8 @@ public class Event {
 	@Column(name = "session_id")
 	private String sessionId;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_at")
-	@CreationTimestamp
 	private Date createdAt;
 	
 	private String url;
