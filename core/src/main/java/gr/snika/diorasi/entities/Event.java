@@ -114,5 +114,13 @@ public class Event {
 	public void setReferrer(String referrer) {
 		this.referrer = referrer;
 	}
+
+	@Override
+	public String toString() {
+		return "Event [id=" + id + ", sessionId=" + sessionId + ", createdAt=" + createdAt + ", url=" + url
+				+ ", eventType=" + eventType + ", eventValue=" + eventValue + ", website=" + website + ", referrer="
+				+ referrer + "]";
+	}
+	
 	
 }
