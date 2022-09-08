@@ -39,6 +39,8 @@ CREATE TABLE event (
 	  ON DELETE CASCADE
 );
 
+CREATE INDEX event_createdDate_idx ON event (created_at);
+
 INSERT INTO public.app_user(username, "password", email, enabled, created_at, last_login, "role", name)
 VALUES('admin', 'admin', 'admin@diorasi.gr', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ADMIN', 'Admin admin');
 

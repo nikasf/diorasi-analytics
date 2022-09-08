@@ -3,9 +3,10 @@ package gr.snika.diorasi.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -25,6 +26,8 @@ public class EventRespositoryTest {
 	@Autowired private EventRepository eventRepository;
 	
 	static TestUtility testUtility;
+	
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
 	@BeforeAll
     public static void db_setup(@Autowired UserRepository userRepository, @Autowired WebsiteRepository websiteRepository, @Autowired EventRepository eventRepository) {
@@ -47,86 +50,88 @@ public class EventRespositoryTest {
 
 	/**
 	 * Expected Result: 
-	 * 					21  : 1
+	 * 					....
 	 * 					16  : 1
-	 * 					15  : 1
+	 * 					....
+	 * 					23  : 2
+	 * 					.....
 	 */
 	@Test
 	void getAllEventsOfAWebsiteByHour() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
-		Date from = null, to = null;
-		try {
-			from = sdf.parse("2020-08-10 00:00:00.000 +0300");
-			to = sdf.parse("2020-08-10 23:59:59.999 +0300");
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+		String date = "2022-08-11";
+		LocalDate localDate = LocalDate.parse(date, formatter);
+		LocalDateTime startOfDay = LocalTime.MIN.atDate(localDate);
+		LocalDateTime endOfDay = LocalTime.MAX.atDate(localDate).minusSeconds(1);
+		
+		System.out.println(startOfDay + " " + endOfDay);
 	
-		List<EventsCountDTO> events = eventRepository.findAllByHour(testUtility.getWebsite().getId(), from , to);
-		assertThat(events).hasSize(3);
+		List<EventsCountDTO> events = eventRepository.findAllByHour(testUtility.getWebsite().getId(), startOfDay , endOfDay);
+		events.forEach(event -> System.out.println(event.getTimefield()));
+		assertThat(events).hasSize(24);
 	}
 	
 	/**
 	 * Expected Result: 
-	 * 					2020-12-23  : 1
-	 * 					2020-08-12  : 1
-	 * 					2020-08-11  : 1
 	 * 					2020-08-10  : 3
+	 * 					2020-08-11  : 1
+	 * 					2020-08-12  : 1
+	 * 					......
+	 * 					2020-09-12	: 0
+	 * 					2020-09-13	: 0
+	 * 					2020-09-14  : 0
 	 */
 	@Test
 	void getAllEventsOfAWebsiteByDay() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
-		Date from = null, to = null;
-		try {
-			from = sdf.parse("2020-08-01 15:07:47.992 +0300");
-			to = sdf.parse("2020-12-24 00:07:47.992 +0300");
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+		String dateFrom = "2020-08-01";
+		String dateTo = "2020-09-14";
+		LocalDate from = LocalDate.parse(dateFrom, formatter);
+		LocalDate to = LocalDate.parse(dateTo, formatter);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByDay(testUtility.getWebsite().getId(), from , to);
-		assertThat(events).hasSize(4);
+		assertThat(events).hasSize(45);
 	}
 	
+
 	/**
 	 * Expected Result: 
-	 * 					 2022  : 4
-	 *				     2021  : 2
-	 *					 2020  : 6
+	 * 					....
+	 * 					2020-8   : 5
+	 * 					.....
+	 * 					2020-12  : 1
+	 * 					...
+	 * 					2021-08	 : 2
+	 * 					....
+	 * 					2022-08	 : 4
 	 */
 	@Test
 	void getAllEventsOfAWebsiteByMonth() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
-		Date from = null, to = null;
-		try {
-			from = sdf.parse("2020-12-01 00:07:47.992 +0300");
-			to = sdf.parse("2021-12-31 00:07:47.992 +0300");
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+		String dateFrom = "2020-07-31";
+		String dateTo = "2022-12-31";
+		LocalDate from = LocalDate.parse(dateFrom, formatter);
+		LocalDate to = LocalDate.parse(dateTo, formatter);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByMonth(testUtility.getWebsite().getId(), from , to);
-		assertThat(events).hasSize(2);
+		assertThat(events).hasSize(30);
 	}
 	
+
 	/**
 	 * Expected Result: 
-	 * 					2021-8   : 2
-	 * 					2020-12  : 1
+	 * 					 2019  : 0
+	 *				     2020  : 6
+	 *					 2021  : 2
+	 *					 2022  : 4
+	 *					 2023  : 0
 	 */
 	@Test
 	void getAllEventsOfAWebsiteByYear() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
-		Date from = null, to = null;
-		try {
-			from = sdf.parse("2020-04-18 00:00:00.000 +0300");
-			to = sdf.parse("2022-08-18 23:59:59.999 +0300");
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+		String dateFrom = "2019-01-01";
+		String dateTo = "2023-12-31";
+		LocalDate from = LocalDate.parse(dateFrom, formatter);
+		LocalDate to = LocalDate.parse(dateTo, formatter);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByYear(testUtility.getWebsite().getId(), from , to);
-		assertThat(events).hasSize(3);
+		assertThat(events).hasSize(5);
 	}
-	
+
 }
