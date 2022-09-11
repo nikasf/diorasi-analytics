@@ -27,7 +27,7 @@ CREATE TABLE website (
 CREATE TABLE event (
 	id 				UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     website_id		UUID NOT NULL,
-    session_id 		VARCHAR(200) NOT NULL,
+    session_id 		UUID NOT NULL,
     created_at 		TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     url 			VARCHAR(500) NOT NULL,
     event_type 		VARCHAR(50) NOT NULL,
@@ -38,6 +38,26 @@ CREATE TABLE event (
 	  REFERENCES website(id)
 	  ON DELETE CASCADE
 );
+
+CREATE TABLE session (
+    id 				UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    website_id		UUID NOT NULL,
+    created_at 		TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    browser 		VARCHAR(20),
+    os 				VARCHAR(30),
+    device 			VARCHAR(20),
+    screen 			VARCHAR(11),
+    language 		VARCHAR(35),
+    country 		CHAR(2),
+    CONSTRAINT fk_website
+      FOREIGN KEY(website_id) 
+	  REFERENCES website(id)
+	  ON DELETE CASCADE
+);
+
+ALTER TABLE event
+  ADD FOREIGN KEY (session_id) REFERENCES session (id);
+
 
 CREATE INDEX event_createdDate_idx ON event (created_at);
 

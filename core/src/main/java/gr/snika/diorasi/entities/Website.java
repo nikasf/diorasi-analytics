@@ -41,6 +41,9 @@ public class Website {
 	@OneToMany(mappedBy = "website", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<Event> events;
 	
+	@OneToMany(mappedBy = "website", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Set<Session> sessions;
+	
 	public Website() {}
 
 	public Website(String domain, String name, Date createdAt, AppUser owner) {

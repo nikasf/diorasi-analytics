@@ -27,9 +27,10 @@ public class EventRespositoryTest {
 	static TestUtility testUtility;
 	
 	@BeforeAll
-    public static void db_setup(@Autowired UserRepository userRepository, @Autowired WebsiteRepository websiteRepository, @Autowired EventRepository eventRepository) {
+    public static void db_setup(@Autowired UserRepository userRepository, @Autowired WebsiteRepository websiteRepository, 
+    		@Autowired EventRepository eventRepository, @Autowired SessionRepository sessionRepository) {
 		System.out.println("startup - creating DB data");
-        testUtility = new TestUtility(userRepository, websiteRepository, eventRepository);
+        testUtility = new TestUtility(userRepository, websiteRepository, eventRepository, sessionRepository);
 		testUtility.createEventsForRangeSelection();
 		System.out.println("Finished - creating DB data");
     }

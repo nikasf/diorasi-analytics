@@ -22,9 +22,6 @@ public class Event {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private UUID id;
 	
-	@Column(name = "session_id")
-	private String sessionId;
-	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_at")
 	private Date createdAt;
@@ -37,30 +34,35 @@ public class Event {
 	@Column(name = "event_value")
 	private String eventValue;
 	
+	private String referrer;
+	
 	@ManyToOne
 	@JoinColumn(name="website_id", nullable=false)
 	private Website website;
 	
-	private String referrer;
+	@ManyToOne
+	@JoinColumn(name="session_id", nullable=false)
+	private Session session;
+	
 	
 	public Event() {}
 	
-	public Event(String sessionId, Date createdAt, String url, String eventType, String eventValue, String referrer) {
+	public Event(Date createdAt, String url, String eventType, String eventValue, String referrer) {
 		super();
-		this.sessionId = sessionId;
 		this.createdAt = createdAt;
 		this.url = url;
 		this.eventType = eventType;
 		this.eventValue = eventValue;
 		this.referrer = referrer;
 	}
+	
+	public Event(Session session, Date createdAt, String url, String eventType, String eventValue, String referrer) {
+		this(createdAt, url, eventType, eventValue, referrer);
+		this.session = session;
+	}
 
 	public UUID getId() {
 		return id;
-	}
-
-	public String getSessionId() {
-		return sessionId;
 	}
 
 	public Date getCreatedAt() {
@@ -77,10 +79,6 @@ public class Event {
 
 	public String getEventValue() {
 		return eventValue;
-	}
-
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
 	}
 
 	public void setCreatedAt(Date createdAt) {
@@ -117,7 +115,7 @@ public class Event {
 
 	@Override
 	public String toString() {
-		return "Event [id=" + id + ", sessionId=" + sessionId + ", createdAt=" + createdAt + ", url=" + url
+		return "Event [id=" + id + ", createdAt=" + createdAt + ", url=" + url
 				+ ", eventType=" + eventType + ", eventValue=" + eventValue + ", website=" + website + ", referrer="
 				+ referrer + "]";
 	}

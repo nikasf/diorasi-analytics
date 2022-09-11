@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +106,6 @@ public class EventService {
 		event.setEventType(dto.getEventType());
 		event.setEventValue(dto.getEventValue());
 		event.setUrl(dto.getUrl());
-		event.setSessionId(dto.getSessionId());
 		return event;
 	}
 	
@@ -117,7 +115,6 @@ public class EventService {
 		eventDTO.setCreatedAt(event.getCreatedAt());
 		eventDTO.setEventType(event.getEventType());
 		eventDTO.setEventValue(event.getEventValue());
-		eventDTO.setSessionId(event.getSessionId());
 		eventDTO.setDomain(event.getWebsite().getDomain());
 		eventDTO.setUrl(event.getUrl());
 		return eventDTO;
