@@ -65,9 +65,7 @@ public class EventServiceTest {
 	@MethodSource("provideParameters")
 	void callPerHourResults(String dateFrom, String dateTo) { 
 		UUID websiteId = UUID.randomUUID();
-		when(this.websiteRepository.findByDomainName("domain")).thenReturn(new Website(websiteId, "domain", "test", new Date(), new AppUser()));
-		
-		eventService.retrieveEventMetrics("domain", dateFrom, dateTo);
+		eventService.retrieveEventMetrics(websiteId.toString(), dateFrom, dateTo);
 		
 		verify(this.eventRepository).findAllByHour(any(UUID.class), any(LocalDateTime.class), any(LocalDateTime.class));
 	}
@@ -87,9 +85,7 @@ public class EventServiceTest {
 		LocalDate from = LocalDate.parse(dateFrom);
 		LocalDate to = LocalDate.parse(dateTo);
 		UUID websiteId = UUID.randomUUID();
-		
-		when(this.websiteRepository.findByDomainName("domain")).thenReturn(new Website(websiteId, "domain", "test", new Date(), new AppUser()));
-		eventService.retrieveEventMetrics("domain", dateFrom, dateTo);
+		eventService.retrieveEventMetrics(websiteId.toString(), dateFrom, dateTo);
 		
 		verify(this.eventRepository).findAllByDay(websiteId, from, to); 
 	}
@@ -101,9 +97,7 @@ public class EventServiceTest {
 		LocalDate from = LocalDate.parse(dateFrom);
 		LocalDate to = LocalDate.parse(dateTo);
 		UUID websiteId = UUID.randomUUID();
-		
-		when(this.websiteRepository.findByDomainName("domain")).thenReturn(new Website(websiteId, "domain", "test", new Date(), new AppUser()));
-		eventService.retrieveEventMetrics("domain", dateFrom, dateTo);
+		eventService.retrieveEventMetrics(websiteId.toString(), dateFrom, dateTo);
 		
 		verify(this.eventRepository).findAllByMonth(websiteId, from, to); 
 	}
@@ -115,9 +109,7 @@ public class EventServiceTest {
 		LocalDate from = LocalDate.parse(dateFrom);
 		LocalDate to = LocalDate.parse(dateTo);
 		UUID websiteId = UUID.randomUUID();
-		
-		when(this.websiteRepository.findByDomainName("domain")).thenReturn(new Website(websiteId, "domain", "test", new Date(), new AppUser()));
-		eventService.retrieveEventMetrics("domain", dateFrom, dateTo);
+		eventService.retrieveEventMetrics(websiteId.toString(), dateFrom, dateTo);
 		
 		verify(this.eventRepository).findAllByYear(websiteId, from, to); 
 	}

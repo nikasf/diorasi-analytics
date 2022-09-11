@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,18 +49,18 @@ public class EventService {
 	 * 4 years	< x < ....  		-> per 1 year
 	 * */
 	//FIXME Use websiteID instead of domain. 
-	public List<EventsCountDTO> retrieveEventMetrics(String domain, String dateFrom, String dateTo){
+	public Map<String,Integer> retrieveEventMetrics(String websiteIdString, String dateFrom, String dateTo){
 		List<EventsCountDTO> dtos = new ArrayList<>();
-		Website website = getWebsite(domain);
+		UUID websiteId = UUID.fromString(websiteIdString);
 		
 		//Retrieve metrics for today
 		if (dateFrom == null || dateFrom.isBlank() || dateTo == null || dateTo.isBlank()) {
 			LocalDate localDate = LocalDate.now();
-			dtos = retrieveEventMetricsForOneDay(website.getId(), localDate);
+			dtos = retrieveEventMetricsForOneDay(websiteId, localDate);
 		} // Retrieve events of one specific day
 		else if (dateFrom.equals(dateTo)) {
 			LocalDate localDate = LocalDate.parse(dateFrom);
-			dtos = retrieveEventMetricsForOneDay(website.getId(), localDate);
+			dtos = retrieveEventMetricsForOneDay(websiteId, localDate);
 		} // Retrieve events of over a day
 		else {
 			LocalDate initializedDateFrom = initializeLocalDate(dateFrom);
@@ -68,14 +70,18 @@ public class EventService {
 		    
 		    // x <= 3 months (and ~30 days)
 		    if (months <= 3) {
-		    	dtos = eventRepository.findAllByDay(website.getId(), initializedDateFrom, initializedDateTo);
+		    	dtos = eventRepository.findAllByDay(websiteId, initializedDateFrom, initializedDateTo);
 		    } else if (months > 3 && months <= 48) {
-		    	dtos = eventRepository.findAllByMonth(website.getId(), initializedDateFrom, initializedDateTo);
+		    	dtos = eventRepository.findAllByMonth(websiteId, initializedDateFrom, initializedDateTo);
 		    } else if (months > 48) {
-		    	dtos = eventRepository.findAllByYear(website.getId(), initializedDateFrom, initializedDateTo);
+		    	dtos = eventRepository.findAllByYear(websiteId, initializedDateFrom, initializedDateTo);
 		    }
 		}
-		return dtos;
+		
+	    Map<String, Integer> map = dtos.stream()
+	    								.collect(Collectors.toMap(EventsCountDTO::getTimefield, EventsCountDTO::getNumberofevents));
+	    
+		return map;
 	}
 
 	public int monthsDiff(LocalDate initializedDateFrom, LocalDate initializedDateTo) {
