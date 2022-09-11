@@ -1,6 +1,6 @@
 package gr.snika.diorasi.controllers;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gr.snika.diorasi.dto.EventDTO;
-import gr.snika.diorasi.dto.EventsCountDTO;
+import gr.snika.diorasi.dto.EventsDTOCountList;
 import gr.snika.diorasi.entities.AppUserDetails;
 import gr.snika.diorasi.services.EventService;
 
@@ -48,19 +48,20 @@ public class EventController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<EventsCountDTO>> getEvents(@RequestParam String domain, @RequestParam Optional<String> dateFrom, @RequestParam Optional<String> dateTo, @AuthenticationPrincipal AppUserDetails user) {
+	public ResponseEntity<EventsDTOCountList> getEvents(@RequestParam String websiteId, @RequestParam Optional<String> dateFrom, @RequestParam Optional<String> dateTo, @AuthenticationPrincipal AppUserDetails user) {
 		try {
 			if (user.isAdmin()) {
-				List<EventsCountDTO> websites = eventService.retrieveEventMetrics(domain, dateFrom.orElse(null), dateTo.orElse(null));
-				return new ResponseEntity<List<EventsCountDTO>>(websites,HttpStatus.OK);	
+				Map<String, Integer> eventCounts = eventService.retrieveEventMetrics(websiteId, dateFrom.orElse(null), dateTo.orElse(null));
+				EventsDTOCountList list = new EventsDTOCountList(eventCounts);
+				return new ResponseEntity<EventsDTOCountList>(list, HttpStatus.OK);	
 			} else {
 				String message = "The current user does not have the ADMIN role in order to retrieve events.";
 				logger.error(message);
-				return new ResponseEntity<List<EventsCountDTO>>(HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<EventsDTOCountList>(HttpStatus.UNAUTHORIZED);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<List<EventsCountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<EventsDTOCountList>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
