@@ -51,6 +51,15 @@ public class Website {
 		this.owner = owner;
 	}
 
+	//For testing purposes
+	public Website(UUID id, String domain, String name, Date createdAt, AppUser owner) {
+		super();
+		this.id = id;
+		this.domain = domain;
+		this.name = name;
+		this.createdAt = createdAt;
+		this.owner = owner;
+	}
 	public UUID getId() {
 		return id;
 	}
