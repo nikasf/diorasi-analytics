@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -26,8 +25,6 @@ public class EventRespositoryTest {
 	@Autowired private EventRepository eventRepository;
 	
 	static TestUtility testUtility;
-	
-	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
 	@BeforeAll
     public static void db_setup(@Autowired UserRepository userRepository, @Autowired WebsiteRepository websiteRepository, @Autowired EventRepository eventRepository) {
@@ -59,7 +56,7 @@ public class EventRespositoryTest {
 	@Test
 	void getAllEventsOfAWebsiteByHour() {
 		String date = "2022-08-11";
-		LocalDate localDate = LocalDate.parse(date, formatter);
+		LocalDate localDate = LocalDate.parse(date);
 		LocalDateTime startOfDay = LocalTime.MIN.atDate(localDate);
 		LocalDateTime endOfDay = LocalTime.MAX.atDate(localDate).minusSeconds(1);
 		
@@ -84,8 +81,8 @@ public class EventRespositoryTest {
 	void getAllEventsOfAWebsiteByDay() {
 		String dateFrom = "2020-08-01";
 		String dateTo = "2020-09-14";
-		LocalDate from = LocalDate.parse(dateFrom, formatter);
-		LocalDate to = LocalDate.parse(dateTo, formatter);
+		LocalDate from = LocalDate.parse(dateFrom);
+		LocalDate to = LocalDate.parse(dateTo);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByDay(testUtility.getWebsite().getId(), from , to);
 		assertThat(events).hasSize(45);
@@ -107,8 +104,8 @@ public class EventRespositoryTest {
 	void getAllEventsOfAWebsiteByMonth() {
 		String dateFrom = "2020-07-31";
 		String dateTo = "2022-12-31";
-		LocalDate from = LocalDate.parse(dateFrom, formatter);
-		LocalDate to = LocalDate.parse(dateTo, formatter);
+		LocalDate from = LocalDate.parse(dateFrom);
+		LocalDate to = LocalDate.parse(dateTo);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByMonth(testUtility.getWebsite().getId(), from , to);
 		assertThat(events).hasSize(30);
@@ -127,8 +124,8 @@ public class EventRespositoryTest {
 	void getAllEventsOfAWebsiteByYear() {
 		String dateFrom = "2019-01-01";
 		String dateTo = "2023-12-31";
-		LocalDate from = LocalDate.parse(dateFrom, formatter);
-		LocalDate to = LocalDate.parse(dateTo, formatter);
+		LocalDate from = LocalDate.parse(dateFrom);
+		LocalDate to = LocalDate.parse(dateTo);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByYear(testUtility.getWebsite().getId(), from , to);
 		assertThat(events).hasSize(5);

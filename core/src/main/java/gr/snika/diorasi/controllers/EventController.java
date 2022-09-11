@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gr.snika.diorasi.dto.EventDTO;
+import gr.snika.diorasi.dto.EventsCountDTO;
 import gr.snika.diorasi.entities.AppUserDetails;
 import gr.snika.diorasi.services.EventService;
 
@@ -47,19 +48,19 @@ public class EventController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<EventDTO>> getEvents(@RequestParam String domain, @RequestParam Optional<String> dateFrom, @RequestParam Optional<String> dateTo, @AuthenticationPrincipal AppUserDetails user) {
+	public ResponseEntity<List<EventsCountDTO>> getEvents(@RequestParam String domain, @RequestParam Optional<String> dateFrom, @RequestParam Optional<String> dateTo, @AuthenticationPrincipal AppUserDetails user) {
 		try {
 			if (user.isAdmin()) {
-				List<EventDTO> websites = eventService.getAllEvents(domain, dateFrom.orElse(null), dateTo.orElse(null));
-				return new ResponseEntity<List<EventDTO>>(websites,HttpStatus.OK);	
+				List<EventsCountDTO> websites = eventService.retrieveEventMetrics(domain, dateFrom.orElse(null), dateTo.orElse(null));
+				return new ResponseEntity<List<EventsCountDTO>>(websites,HttpStatus.OK);	
 			} else {
-				String message = "The current user does not have the ADMIN role in order to create a event entry.";
+				String message = "The current user does not have the ADMIN role in order to retrieve events.";
 				logger.error(message);
-				return new ResponseEntity<List<EventDTO>>(HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<List<EventsCountDTO>>(HttpStatus.UNAUTHORIZED);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<List<EventDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<List<EventsCountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
