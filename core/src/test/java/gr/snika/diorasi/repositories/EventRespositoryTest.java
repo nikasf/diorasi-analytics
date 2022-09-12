@@ -24,6 +24,8 @@ public class EventRespositoryTest {
 	
 	@Autowired private EventRepository eventRepository;
 	
+	@Autowired private SessionRepository sessionRepository;
+	
 	static TestUtility testUtility;
 	
 	@BeforeAll
@@ -64,7 +66,7 @@ public class EventRespositoryTest {
 		System.out.println(startOfDay + " " + endOfDay);
 	
 		List<EventsCountDTO> events = eventRepository.findAllByHour(testUtility.getWebsite().getId(), startOfDay , endOfDay);
-		events.forEach(event -> System.out.println(event.getTimefield()));
+		events.forEach(event -> System.out.println(event.getFilterfield()));
 		assertThat(events).hasSize(24);
 	}
 	
@@ -131,5 +133,89 @@ public class EventRespositoryTest {
 		List<EventsCountDTO> events = eventRepository.findAllByYear(testUtility.getWebsite().getId(), from , to);
 		assertThat(events).hasSize(5);
 	}
+	
+	
+	@Test
+	void getAllEventsOfAWebsitePerPage() {
+		String dateFrom = "2020-07-31";
+		String dateTo = "2022-12-31";
+		LocalDate from = LocalDate.parse(dateFrom);
+		LocalDate to = LocalDate.parse(dateTo);
+	
+		List<EventsCountDTO> events = eventRepository.findPagesCount(testUtility.getWebsite().getId(), from , to);
+		assert(events.get(0).getFilterfield()).equals("www.agathi.gr/house");
+		assert(events.get(0).getNumberofevents()).equals(3);
+		assertThat(events).hasSize(2);
+	}
+	
+	@Test
+	void getAllEventsOfAWebsitePerBrowser() {
+		String dateFrom = "2022-08-01";
+		String dateTo = "2022-10-01";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+	
+		List<EventsCountDTO> events = sessionRepository.findNoOfEventsPerBrowser(testUtility.getWebsite().getId(), from , to);
+		assert(events.get(0).getFilterfield()).equals("Mozilla Firefox");
+		assert(events.get(0).getNumberofevents()).equals(2);
+		assertThat(events).hasSize(2);
+	}
+	
+	@Test
+	void getAllEventsOfAWebsitePerDevice() {
+		String dateFrom = "2022-08-01";
+		String dateTo = "2022-10-01";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+	
+		List<EventsCountDTO> events = sessionRepository.findNoOfEventsPerDevice(testUtility.getWebsite().getId(), from , to);
+		assert(events.get(0).getFilterfield()).equals("Tablet");
+		assert(events.get(0).getNumberofevents()).equals(2);
+		assertThat(events).hasSize(2);
+	}
+	
+	@Test
+	void getAllEventsOfAWebsitePerOS() {
+		String dateFrom = "2022-08-01";
+		String dateTo = "2022-10-01";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+	
+		List<EventsCountDTO> events = sessionRepository.findNoOfEventsPerOS(testUtility.getWebsite().getId(), from , to);
+		assert(events.get(0).getFilterfield()).equals("MAc OS");
+		assert(events.get(0).getNumberofevents()).equals(2);
+		assertThat(events).hasSize(2);
+	}
+	
+	@Test
+	void getAllEventsOfAWebsitePerCountry() {
+		String dateFrom = "2022-08-01";
+		String dateTo = "2022-10-01";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+	
+		List<EventsCountDTO> events = sessionRepository.findNoOfEventsPerCountry(testUtility.getWebsite().getId(), from , to);
+		assert(events.get(0).getFilterfield()).equals("GR");
+		assert(events.get(0).getNumberofevents()).equals(2);
+		assertThat(events).hasSize(2);
+	}
+	
+	@Test
+	void getAllEventsOfAWebsitePerResolution() {
+		String dateFrom = "2022-08-01";
+		String dateTo = "2022-10-01";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+	
+		List<EventsCountDTO> events = sessionRepository.findNoOfEventsPerResolution(testUtility.getWebsite().getId(), from , to);
+		events.forEach(e -> {
+			System.out.println(e.getNumberofevents());
+			System.out.println(e.getFilterfield());
+		});
+		assert(events.get(0).getFilterfield()).equals("1366x768");
+		assert(events.get(0).getNumberofevents()).equals(2);
+		assertThat(events).hasSize(2);
+	}
+	
 
 }

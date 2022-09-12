@@ -17,15 +17,19 @@ import gr.snika.diorasi.dto.EventDTO;
 import gr.snika.diorasi.dto.EventsCountDTO;
 import gr.snika.diorasi.entities.Event;
 import gr.snika.diorasi.entities.Website;
+import gr.snika.diorasi.enums.SearchFilter;
 import gr.snika.diorasi.repositories.EventRepository;
+import gr.snika.diorasi.repositories.SessionRepository;
 import gr.snika.diorasi.repositories.WebsiteRepository;
-
 
 @Service
 public class EventService {
-	
+
 	@Autowired
 	EventRepository eventRepository;
+
+	@Autowired
+	SessionRepository sessionRepository;
 
 	@Autowired
 	WebsiteRepository websiteRepository;
@@ -36,7 +40,7 @@ public class EventService {
 		event.setWebsite(website);
 		eventRepository.save(event);
 	}
-	
+
 	private Website getWebsite(String domain) {
 		return websiteRepository.findByDomainName(domain);
 	}
@@ -46,13 +50,12 @@ public class EventService {
 	 * 1 day 	< x < 3 months		-> per day
 	 * 3 months < x < 4 years(48m)	-> per 1 month
 	 * 4 years	< x < ....  		-> per 1 year
-	 * */
-	//FIXME Use websiteID instead of domain. 
+	 * */ 
 	public Map<String,Integer> retrieveEventMetrics(String websiteIdString, String dateFrom, String dateTo){
 		List<EventsCountDTO> dtos = new ArrayList<>();
 		UUID websiteId = UUID.fromString(websiteIdString);
-		
-		//Retrieve metrics for today
+
+		// Retrieve metrics for today
 		if (dateFrom == null || dateFrom.isBlank() || dateTo == null || dateTo.isBlank()) {
 			LocalDate localDate = LocalDate.now();
 			dtos = retrieveEventMetricsForOneDay(websiteId, localDate);
@@ -64,42 +67,86 @@ public class EventService {
 		else {
 			LocalDate initializedDateFrom = initializeLocalDate(dateFrom);
 			LocalDate initializedDateTo = initializeLocalDate(dateTo);
-			
+
 			int months = monthsDiff(initializedDateFrom, initializedDateTo);
-		    
-		    // x <= 3 months (and ~30 days)
-		    if (months <= 3) {
-		    	dtos = eventRepository.findAllByDay(websiteId, initializedDateFrom, initializedDateTo);
-		    } else if (months > 3 && months <= 48) {
-		    	dtos = eventRepository.findAllByMonth(websiteId, initializedDateFrom, initializedDateTo);
-		    } else if (months > 48) {
-		    	dtos = eventRepository.findAllByYear(websiteId, initializedDateFrom, initializedDateTo);
-		    }
+
+			// x <= 3 months (and ~30 days)
+			if (months <= 3) {
+				dtos = eventRepository.findAllByDay(websiteId, initializedDateFrom, initializedDateTo);
+			} else if (months > 3 && months <= 48) {
+				dtos = eventRepository.findAllByMonth(websiteId, initializedDateFrom, initializedDateTo);
+			} else if (months > 48) {
+				dtos = eventRepository.findAllByYear(websiteId, initializedDateFrom, initializedDateTo);
+			}
+		}
+
+		Map<String, Integer> map = dtos.stream()
+				.collect(Collectors.toMap(EventsCountDTO::getFilterfield, EventsCountDTO::getNumberofevents));
+
+		return map;
+	}
+
+	public Map<String, Integer> retrieveEventMetricsWithFilter(String websiteIdString, String filter, String dateFrom,
+			String dateTo) {
+		List<EventsCountDTO> dtos = new ArrayList<>();
+		UUID websiteId = UUID.fromString(websiteIdString);
+		LocalDate localDateFrom = null, localDateTo = null;
+
+		if (dateFrom == null || dateFrom.isBlank() || dateTo == null || dateTo.isBlank()) {
+			localDateFrom = localDateTo = LocalDate.now();
+		} else if (dateFrom.equals(dateTo)) {
+			localDateFrom = localDateTo = LocalDate.parse(dateFrom);
+		} else {
+			localDateFrom = initializeLocalDate(dateFrom);
+			localDateTo = initializeLocalDate(dateTo);
 		}
 		
-	    Map<String, Integer> map = dtos.stream()
-	    								.collect(Collectors.toMap(EventsCountDTO::getTimefield, EventsCountDTO::getNumberofevents));
-	    
+		LocalDateTime startOfDay = LocalTime.MIN.atDate(localDateFrom);
+		LocalDateTime endOfDay = LocalTime.MAX.atDate(localDateTo).minusSeconds(1);
+
+		SearchFilter sf = SearchFilter.get(filter);
+		switch (sf) {
+			case DEVICE:
+				dtos = sessionRepository.findNoOfEventsPerDevice(websiteId, startOfDay, endOfDay);
+				break;
+			case BROWSER:
+				dtos = sessionRepository.findNoOfEventsPerBrowser(websiteId, startOfDay, endOfDay);
+				break;
+			case OPERATING_SYSTEM:
+				dtos = sessionRepository.findNoOfEventsPerOS(websiteId, startOfDay, endOfDay);
+				break;
+			case COUNTRY:
+				dtos = sessionRepository.findNoOfEventsPerCountry(websiteId, startOfDay, endOfDay);
+				break;
+			case RESOLUTION:
+				dtos = sessionRepository.findNoOfEventsPerResolution(websiteId, startOfDay, endOfDay);
+				break;
+		}
+
+		Map<String, Integer> map = dtos.stream()
+				.collect(Collectors.toMap(EventsCountDTO::getFilterfield, EventsCountDTO::getNumberofevents));
+
 		return map;
 	}
 
 	public int monthsDiff(LocalDate initializedDateFrom, LocalDate initializedDateTo) {
 		Period period = Period.between(initializedDateFrom, initializedDateTo);
 		int years = period.getYears();
-		int months = period.getMonths() + 12*years;
+		int months = period.getMonths() + 12 * years;
 		return months;
 	}
 
 	private List<EventsCountDTO> retrieveEventMetricsForOneDay(UUID websiteId, LocalDate localDate) {
 		LocalDateTime startOfDay = LocalTime.MIN.atDate(localDate);
 		LocalDateTime endOfDay = LocalTime.MAX.atDate(localDate).minusSeconds(1);
-		
+
 		return eventRepository.findAllByHour(websiteId, startOfDay, endOfDay);
 	}
 
 	private LocalDate initializeLocalDate(String stringDate) {
 		return LocalDate.parse(stringDate);
 	}
+	
 
 	public Event convertToEvent(EventDTO dto) {
 		Event event = new Event();
@@ -108,8 +155,8 @@ public class EventService {
 		event.setUrl(dto.getUrl());
 		return event;
 	}
-	
-	//FIXME Delete me if not used
+
+	// FIXME Delete me if not used
 	public EventDTO convertToEventDTO(Event event) {
 		EventDTO eventDTO = new EventDTO();
 		eventDTO.setCreatedAt(event.getCreatedAt());

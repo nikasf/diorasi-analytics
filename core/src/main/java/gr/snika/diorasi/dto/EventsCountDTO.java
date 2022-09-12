@@ -8,7 +8,7 @@ package gr.snika.diorasi.dto;
  */
 public interface EventsCountDTO {
 	
-	public String getTimefield();
+	public String getFilterfield();
 	
 	public Integer getNumberofevents();
 }

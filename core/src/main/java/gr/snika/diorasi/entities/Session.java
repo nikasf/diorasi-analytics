@@ -36,7 +36,7 @@ public class Session {
 	
 	private String device;
 	
-	private String screen;
+	private String resolution;
 	
 	private String language;
 	
@@ -51,14 +51,14 @@ public class Session {
 	
 	public Session () {}
 
-	public Session(Date createdAt, String browser, String os, String device, String screen, String language,
+	public Session(Date createdAt, String browser, String os, String device, String resolution, String language,
 			String country) {
 		super();
 		this.createdAt = createdAt;
 		this.browser = browser;
 		this.os = os;
 		this.device = device;
-		this.screen = screen;
+		this.resolution = resolution;
 		this.language = language;
 		this.country = country;
 	}
@@ -83,8 +83,8 @@ public class Session {
 		return device;
 	}
 
-	public String getScreen() {
-		return screen;
+	public String getResolution() {
+		return resolution;
 	}
 
 	public String getLanguage() {
@@ -115,8 +115,8 @@ public class Session {
 		this.device = device;
 	}
 
-	public void setScreen(String screen) {
-		this.screen = screen;
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
 	}
 
 	public void setLanguage(String language) {

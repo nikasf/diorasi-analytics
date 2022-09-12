@@ -3,11 +3,10 @@ package gr.snika.diorasi.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalTime;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -23,9 +22,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import gr.snika.diorasi.entities.AppUser;
-import gr.snika.diorasi.entities.Website;
 import gr.snika.diorasi.repositories.EventRepository;
+import gr.snika.diorasi.repositories.SessionRepository;
 import gr.snika.diorasi.repositories.WebsiteRepository;
 import gr.snika.diorasi.services.EventService;
 
@@ -38,6 +36,9 @@ public class EventServiceTest {
 	
 	@Mock
 	private WebsiteRepository websiteRepository;
+	
+	@Mock
+	private SessionRepository sessionRepository;
 	
 	@InjectMocks
 	private EventService eventService = new EventService();
@@ -60,7 +61,7 @@ public class EventServiceTest {
 		assertEquals(actual, 63);
 	}
 	
-	//FIXME: Create a parameterized test for all the different dates and methods that must be called
+	//TODO: Create a parameterized test for all the different dates and methods that must be called
 	@ParameterizedTest
 	@MethodSource("provideParameters")
 	void callPerHourResults(String dateFrom, String dateTo) { 
@@ -69,7 +70,6 @@ public class EventServiceTest {
 		
 		verify(this.eventRepository).findAllByHour(any(UUID.class), any(LocalDateTime.class), any(LocalDateTime.class));
 	}
-	
 	
 	private static Stream<Arguments> provideParameters() {
 	    return Stream.of(
@@ -112,6 +112,30 @@ public class EventServiceTest {
 		eventService.retrieveEventMetrics(websiteId.toString(), dateFrom, dateTo);
 		
 		verify(this.eventRepository).findAllByYear(websiteId, from, to); 
+	}
+	
+	@Test
+	void callPerDeviceResults() { 
+		String dateFrom = "2017-05-14";
+		String dateTo = "2022-09-11";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+		UUID websiteId = UUID.randomUUID();
+		eventService.retrieveEventMetricsWithFilter(websiteId.toString(), "device", dateFrom, dateTo);
+		
+		verify(this.sessionRepository).findNoOfEventsPerDevice(websiteId, from, to);
+	}
+	
+	@Test
+	void callPerOSResults() { 
+		String dateFrom = "2017-05-14";
+		String dateTo = "2022-09-11";
+		LocalDateTime from = LocalTime.MIN.atDate(LocalDate.parse(dateFrom));
+		LocalDateTime to = LocalTime.MAX.atDate(LocalDate.parse(dateTo)).minusSeconds(1);
+		UUID websiteId = UUID.randomUUID();
+		eventService.retrieveEventMetricsWithFilter(websiteId.toString(), "os", dateFrom, dateTo);
+		
+		verify(this.sessionRepository).findNoOfEventsPerOS(websiteId, from, to);
 	}
 
 }

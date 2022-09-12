@@ -46,7 +46,7 @@ CREATE TABLE session (
     browser 		VARCHAR(20),
     os 				VARCHAR(30),
     device 			VARCHAR(20),
-    screen 			VARCHAR(11),
+    resolution 		VARCHAR(11),
     language 		VARCHAR(35),
     country 		CHAR(2),
     CONSTRAINT fk_website
